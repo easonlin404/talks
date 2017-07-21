@@ -1,0 +1,272 @@
+Introduction to Go
+Build Simple, Reliable, and Efficient
+
+Eason Lin
+CATCHPLAY
+easonlin@catchplay.com
+https://github.com/easonlin404
+
+* What is Go?
+
+- Created by Google
+- Design by Robert Griesemer, Rob Pike, and Ken Thompson
+
+.image intro-go/images/appenginegophercolor.jpg 500 700
+
+
+* What is Go?
+
+Go is:
+
+- simple
+- clean syntax
+- efficient
+- open source
+- concurrency
+- great tools
+- error handling
+
+* The 2017 Top Programming Languages
+
+.image intro-go/images/rank.jpeg
+
+[[http://spectrum.ieee.org/computing/software/the-2017-top-programming-languages][http://spectrum.ieee.org/computing/software/the-2017-top-programming-languages]]
+
+
+* Hello world!
+
+.code intro-go/hello.go
+
+Run
+
+  $ go run hello.go
+
+* In this talk
+
+- build and workspaces
+- arrays and slices
+- structs and interfaces
+- errors handling
+- goroutines and cannels
+- our project architecture
+- web api development
+- ...
+
+* Workspace
+
+A workspace is a directory with three directories:
+
+  workspace/
+    src # source code
+
+    pkg # compiled object files
+
+    bin # executable binaries
+
+
+* Create a workspace
+
+Create your workspace now.
+
+#I prefer to use the name "gocode", but you can use whatever you like.
+
+  $ mkdir -p $HOME/gocode/src
+
+
+Tell the `go` tool where your workspace is by setting the `GOPATH` environment variable:
+# You can do this on OS X, Linux, and FreeBSD by adding this line to the `$HOME/.profile` and re-starting any running shells:
+
+  export GOPATH=$HOME/gocode
+
+# See the installation instructions at golang.org for how to set `GOPATH` under Windows.
+
+You may also want to add the `bin` sub-directory of your workspace to your `PATH`:
+
+  export PATH=$PATH:$GOPATH/bin
+
+This lets you run your Go programs without specifying their full path.
+
+
+* Build and Install
+
+`Build` and `install` that program with the go tool:
+
+  cd $GOPATH/src/hello
+  $ go install
+
+You can now run the program by typing its full path:
+
+  $ $GOPATH/bin/hello
+  Hello, 世界.
+
+Or, just type the binary name:
+
+  $ hello
+  Hello, 世界.
+
+	
+* Arrays
+
+An `array` has a fixed size.	
+The type [n]T is an array of n values of type T.
+
+  var a [10]int
+
+.code intro-go/array.go
+
+* Slices
+A `slice` is a dynamically-sized.
+The type []T is a slice with elements of type T.
+	
+.code intro-go/slices.go
+
+* Slices (cont.)
+
+It consists of a pointer to the array, the length of the segment, and its capacity:
+
+.image intro-go/images/go-slices-usage-and-internals_slice-struct.png
+
+Variable `s`, created earlier by `make([]byte, 5)`, is structured like this:
+
+.image intro-go/images/go-slices-usage-and-internals_slice-1.png
+
+* Slices (cont.)
+
+  s = s[2:4]
+
+.image intro-go/images/go-slices-usage-and-internals_slice-2.png
+
+
+* Structs
+
+A `struct` is a collection of fields.
+
+.code intro-go/struct.go
+
+* Interface
+
+An `interface` type is defined as a set of method signatures.
+
+.code intro-go/interfaces.go
+
+* Interface (cont.)
+
+.code intro-go/interfaces-main.go
+
+* Error
+
+The `error` type is an interface type. 
+An error variable represents any value that can describe itself as a string:
+
+  type error interface {
+      Error() string
+  }
+
+Uses os.Open to open a file. If an error occurs it calls `log.Fatal` to print the error message and stop:
+
+  f, err := os.Open("filename.ext")
+  if err != nil {
+      log.Fatal(err)
+  }
+  // do something with the open *File f
+
+* Defer Panic and Recover
+
+Defer
+ - A `defer` statement pushes a function call onto a list. 
+
+Panic
+ -  a built-in function that stops the ordinary flow of control and begins panicking.
+
+Recover
+ -  a built-in function that regains control of a panicking goroutine.
+
+* Defer Panic and Recover (cont.)
+
+.code intro-go/panic.go
+
+* Defer Panic and Recover (cont.)
+
+The program will output:
+
+  Calling g.
+  Printing in g 0
+  Printing in g 1
+  Printing in g 2
+  Printing in g 3
+  Panicking!
+  Defer in g 3
+  Defer in g 2
+  Defer in g 1
+  Defer in g 0
+  Recovered in f 4
+  Returned normally from f.
+
+* Goroutines and Channels
+
+Goroutines are independently executing functions in the same address space.
+
+   go f()
+   go g(1, 2)
+
+Channels are typed values that allow goroutines to synchronize and exchange information.
+
+  c := make(chan int)
+  go func() { c <- 3 }()
+  n := <-c
+
+* Example: ping-pong
+
+.play intro-go/pingpong/pingpong.go /STARTMAIN1/,/STOPMAIN1/
+
+
+* Our project architecture
+
+* Structure in module
+
+.code intro-go/layout.txt
+
+- [[https://github.com/kardianos/govendor][govendor]]
+- [[https://github.com/gin-gonic/gin][gin-gonic/gin]]
+
+
+* Govender - Go vendor tool
+
+Setup your project.
+
+  $ cd "my project in GOPATH"
+  $ govendor init
+
+View your dependencies.
+  
+  $ govendor list
+
+Add existing GOPATH files to vendor
+  
+  $ govendor add +external
+
+Update a package to latest.
+
+  $ govendor fetch golang.org/x/net/context
+
+* Gin - a web framework written in Go
+
+.image intro-go/images/color.png 300 250
+
+
+* Using GET, POST, PUT, PATCH, DELETE and OPTIONS
+
+.code intro-go/gin.go /START OMIT/,/END OMIT/
+
+* Grouping routes
+.code intro-go/gin-group.go
+
+* Binding from JSON
+
+.code intro-go/gin-binding.go
+
+* Custom Middleware
+
+.code intro-go/gin-middlware.go
+
+

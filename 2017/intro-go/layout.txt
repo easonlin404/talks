@@ -1,0 +1,19 @@
+export GOPATH=/Users/easonlin/go
+
+project_name                   
+    /{module-nmae}                    # by functionality
+        /controller                
+            version_controller.go
+            xxxxxxx_controller.go
+        /service                
+            mars_service.go
+            xxxx_service.go
+        /view
+            common_response.go
+            xxxxxx_response.go
+    /middleware                       # custom middlware
+        auth.go
+        request.go             
+    ./vendor                          # third-party lib
+    router.go                         # http router configuration
+    main.go
